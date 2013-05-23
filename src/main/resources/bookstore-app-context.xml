@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <!-- Cache configuration -->
+
+    <cache:annotation-driven />
+
+    <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+        <property name="caches">
+            <set>
+                <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean" p:name="books"/>
+            </set>
+        </property>
+    </bean>
+
+    <!--Properties configuration-->
+    <!-- Was not managed to set active profile from properties -->
+
+    <!--<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:/app-common.properties"/>
+    </bean>-->
+
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="locations" value="classpath:/app-common.properties"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+    </bean>
+
+    <!--<context:property-placeholder location="classpath:/app-common.properties"/>-->
+
+    <!--Application beans-->
+
+    <bean id="bookStoreService" class="spring.samples.service.BookStoreService" c:bookStoreDao-ref="bookStoreDao"/>
+
+    <bean id="bookStoreDao" class="spring.samples.dao.BookStoreDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--Profiles-->
+
+    <beans profile="dev">
+        <jdbc:embedded-database id="dataSource">
+            <jdbc:script location="classpath:db/schema.sql"/>
+            <jdbc:script location="classpath:db/test-data.sql"/>
+        </jdbc:embedded-database>
+
+        <!--<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+            <property name="caches">
+                <set>
+                    <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean" p:name="books"/>
+                </set>
+            </property>
+        </bean>-->
+    </beans>
+
+    <beans profile="production">
+
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations" value="classpath:/prod-database.properties"/>
+        </bean>
+
+        <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+            <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+            <property name="url" value="${url}"/>
+            <property name="username" value="${user}"/>
+            <property name="password" value="${password}"/>
+        </bean>
+
+        <!--<bean id="dataSource" class="com.mchange.v2.c3po.ComboPooledDataSource">
+            <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+            <property name="url" value="jdbc:oracle:thin:@localhost:1521:booklibrary"/>
+            <property name="username" value="admin"/>
+            <property name="password" value="admin"/>
+            <property name="minPoolSize" value="5"/>
+            <property name="maxPoolSize" value="10"/>
+        </bean>-->
+
+        <!--  EhCache cache manager -->
+        <!--<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/>-->
+        <!-- EhCache library setup -->
+        <!--<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="ehcache.xml"/>-->
+
+    </beans>
+</beans>

@@ -1,0 +1,1 @@
+insert into BOOKSTORE (ID, NAME, AUTHOR) values (123456789, 'Spring in Action', 'Craig Walls');
