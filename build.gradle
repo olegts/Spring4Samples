@@ -4,7 +4,6 @@ apply plugin: 'maven'
 group = 'org.springframework'
 version = '1.0'
   
-
 description = "This is Spring 4 sample project for JEE Conf 2013"
 
 //Gradle 1.5 has a problems with running tests built using JDK8-b87
@@ -14,6 +13,7 @@ targetCompatibility = 1.7
 repositories {
      mavenRepo url: "http://repo.springsource.org/snapshot"
      mavenRepo url: "http://repo.maven.apache.org/maven2"
+     mavenRepo(url: new File('H:/Programming/m2_repo').toURI().toURL())
 }
 
 dependencies {
@@ -29,4 +29,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version:'4.11'
     testCompile group: 'org.springframework', name: 'spring-test', version:'4.0.0.BUILD-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-all', version:'1.9.0'
+    runtime group: 'oracle', name: 'jdbc', version:'11.2.0'
 }
